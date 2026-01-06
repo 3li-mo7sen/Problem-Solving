@@ -3,126 +3,140 @@
 #include <algorithm>
 #include <string>
 #include <map>
-#include <unordered_map>
 #include <set>
-#include <unordered_set>
-#include <queue>
-#include <deque>
-#include <stack>
-#include <list>
-#include <array>
-#include <bitset>
-#include <utility>
-#include <tuple>
 #include <cmath>
-#include <numeric>
-#include <iterator>
-#include <functional>
-#include <limits>
+#include <queue>
+#include <stack>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include <iomanip>
-#include <sstream>
-#include <fstream>
-#include <forward_list>
-#include <valarray>
-#include <complex>
+#include <bitset>
+#include <cassert>
 #include <random>
 #include <chrono>
+#include <functional>
+#include <unordered_map>
+#include <unordered_set>
+#include <tuple>
+#include <complex>
+#include <numeric>
+#include <array>
 #include <climits>
 #include <cfloat>
-#include <cstdlib>
-#include <cstring>
-#include <cstdint>
-#include <cassert>
-#include <ctime>
-#include <ratio>
+#include <sstream>
+#include <locale>
+#include <codecvt>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <future>
+#include <atomic>
 #include <type_traits>
-#include <exception>
-#include <stdexcept>
-#include <cfenv>
-#include <cstddef>
-#include <concepts>
-#include <ranges>
-#include <optional>
-using ll = long long;
+#include <memory>
+#include <variant>
+#include <any>
+#include <regex>
 using namespace std;
-int find_last_ru(string s)
-{
-    int idx = -1;
-    for (int i = 0; i < s.size() - 1; i++)
-    {
-        if (s[i] == 'r' && s[i + 1] == 'u')
-        {
-            idx = i;
-        }
-    }
-    return idx;
-}
-void Messi()
-{
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-}
+using ll = long long;
+#define Messi ios::sync_with_stdio(false); cin.tie(nullptr);
 
 void _3li()
 {
-    int n; cin >> n;
-    vector<int>v(n + 6, 0);
+    ll n, q;
+    cin >> n >> q;
+    string s;
+    cin >> s;
+    vector<ll> ra(q);
+    for (int i = 0; i < q; i++) cin >> ra[i];
 
-    //ss.resize(n + 1);
-    //cout << ss << endl;
+    int cnt_b = 0;
+    for (auto c : s) if (c == 'B') cnt_b++;
 
-    for (int i = 1; i <= n; i++) cin >> v[i];
-    string s; cin >> s;// 1 2 5 3 4 6
-    s = "0" + s; //       0 0 1 1 1 0
-    vector<int>pref(n + 1, 0);
-    for (int i = 1; i < n; i++)
+    if (cnt_b == 0)
     {
-        pref[i] = pref[i - 1] + (s[i] == '1' ? 1 : 0);
-    }
- /*   for (int i = 1; i < n; i++)
-    {
-        cout << pref[i] << " ";
-    }*/
-    //cout << pref[n] << endl;
-    for (int i = 1; i <= n; i++)
-    {
-        if (v[i] == i)continue;
-        int l = min(i,v[i]);
-        int r = max(i, v[i]);
-        int sum = pref[r ] - pref[l - 1];
-		cout << sum << " " << l << " " << r << endl;
-        if (sum < r - l + 1)
+        for (int i = 0; i < q; i++)
         {
+            cout << ra[i];
+            if (i < q - 1) cout << " ";
+        }
+        cout << "\n";
+        return;
+    }
 
-            cout << "NO\n";
-            return;
+    vector<ll> na(n), nb(n);
+    for (int i = 0; i < n; i++)
+    {
+        if (s[i] == 'B')
+        {
+            na[i] = 0;
+            nb[i] = i;
+        }
+        else
+        {
+            int c = 0;
+            int j = i;
+            while (s[j] == 'A')
+            {
+                c++;
+                j = (j + 1) % n;
+            }
+            na[i] = c;
+            nb[i] = j;
         }
     }
-    //// cout << s << endl;
 
-    cout << "YES\n";
+    for (int i = 0; i < q; i++)
+    {
+        ll cura = ra[i];
+        ll steps = 0;
+        ll curmachine = 0;
 
+        while (cura > 0)
+        {
+            char c = s[curmachine];
+            if (c == 'B')
+            {
+                cura /= 2;
+                steps++;
+                curmachine = (curmachine + 1) % n;
+            }
+            else
+            {
+                int k = na[curmachine];
+                int nb_index = nb[curmachine];
+                if (cura <= k)
+                {
+                    steps += cura;
+                    cura = 0;
+                }
+                else
+                {
+                    cura -= k;
+                    steps += k;
+                    curmachine = nb_index;
+                    cura /= 2;
+                    steps++;
+                    curmachine = (curmachine + 1) % n;
+                }
+            }
+        }
+        cout << steps;
+        if (i < q - 1) cout << "\n";
+    }
+    cout << "\n";
 }
-void tests()
+
+int main()
 {
-    ll t;
+    // freopen("neat.in", "r", stdin);
+    // freopen("neat.out", "w", stdout);
+    Messi;
+    int t = 1;
     cin >> t;
     while (t--)
     {
         _3li();
     }
-}
-void solve_with_tests(bool there_are_tests)
-{
-    if (there_are_tests)
-        tests();
-    else
-        _3li();
-}
-
-int main()
-{
-    Messi();
-    solve_with_tests(0);
     return 0;
 }
